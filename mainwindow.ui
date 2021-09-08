@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>576</width>
+    <height>353</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Comunicación entre PC - Mbed</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <widget class="QWidget" name="widget" native="true">
+    <property name="geometry">
+     <rect>
+      <x>610</x>
+      <y>10</y>
+      <width>161</width>
+      <height>531</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QGroupBox" name="groupBox">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>140</y>
+      <width>541</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Flujo de Datos</string>
+    </property>
+    <widget class="QTextBrowser" name="textBrowser">
+     <property name="geometry">
+      <rect>
+       <x>20</x>
+       <y>20</y>
+       <width>511</width>
+       <height>121</height>
+      </rect>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QGroupBox" name="groupBox_2">
+    <property name="geometry">
+     <rect>
+      <x>30</x>
+      <y>30</y>
+      <width>162</width>
+      <height>97</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Comunicaciones</string>
+    </property>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="0" column="0">
+      <widget class="QComboBox" name="comboBox">
+       <item>
+        <property name="text">
+         <string>Alive</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>Lista de Comandos</string>
+        </property>
+       </item>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="pushButtonEnviar">
+       <property name="text">
+        <string>Enviar</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>576</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuMenu">
+    <property name="title">
+     <string>Menu</string>
+    </property>
+    <widget class="QMenu" name="menuComunicaci_n">
+     <property name="title">
+      <string>Comunicación</string>
+     </property>
+     <addaction name="actionEscaneo_de_Puertos"/>
+     <addaction name="actionDesconectar"/>
+     <addaction name="actionConectar"/>
+    </widget>
+    <addaction name="menuComunicaci_n"/>
+    <addaction name="actionSalir"/>
+   </widget>
+   <addaction name="menuMenu"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSalir">
+   <property name="text">
+    <string>Salir</string>
+   </property>
+  </action>
+  <action name="actionEscaneo_de_Puertos">
+   <property name="text">
+    <string>Escaneo de Puertos</string>
+   </property>
+  </action>
+  <action name="actionDesconectar">
+   <property name="text">
+    <string>Desconectar</string>
+   </property>
+   <property name="toolTip">
+    <string>Desconectar</string>
+   </property>
+  </action>
+  <action name="actionConectar">
+   <property name="text">
+    <string>Conectar</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
