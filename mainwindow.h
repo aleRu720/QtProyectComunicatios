@@ -33,6 +33,12 @@ private slots:
 
     void on_pushButtonEnviar_clicked();
 
+    void on_comboBox_currentIndexChanged(int index);
+
+    void getLedsCanvas(uint16_t leds);
+
+    //void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
     QSerialPort *mySerial;
@@ -53,6 +59,15 @@ private:
 
     _eProtocolo estadoProtocolo;
 
+    typedef enum{
+        ALIVE=0xF0,
+        GET_LEDS=0xF1,
+        SET_LEDS=0xF2,
+        OTHERS
+    }_eID;
+
+    _eID estadoComandos;
+
     typedef struct{
         uint8_t timeOut;
         uint8_t cheksum;
@@ -62,6 +77,19 @@ private:
     }_sDatos ;
 
     _sDatos rxData, txData;
+
+    typedef union {
+        float f32;
+        int i32;
+        unsigned int ui32;
+        unsigned short ui16[2];
+        short i16[2];
+        uint8_t ui8[4];
+        char chr[4];
+        unsigned char uchr[4];
+    }_udat;
+
+    _udat myWord;
 
 };
 #endif // MAINWINDOW_H

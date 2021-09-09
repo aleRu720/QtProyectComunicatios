@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>576</width>
-    <height>353</height>
+    <width>906</width>
+    <height>455</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,19 +17,19 @@
    <widget class="QWidget" name="widget" native="true">
     <property name="geometry">
      <rect>
-      <x>610</x>
-      <y>10</y>
-      <width>161</width>
-      <height>531</height>
+      <x>20</x>
+      <y>170</y>
+      <width>871</width>
+      <height>131</height>
      </rect>
     </property>
    </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>20</x>
-      <y>140</y>
-      <width>541</width>
+      <x>200</x>
+      <y>10</y>
+      <width>691</width>
       <height>151</height>
      </rect>
     </property>
@@ -41,7 +41,7 @@
       <rect>
        <x>20</x>
        <y>20</y>
-       <width>511</width>
+       <width>661</width>
        <height>121</height>
       </rect>
      </property>
@@ -62,14 +62,30 @@
     <layout class="QGridLayout" name="gridLayout">
      <item row="0" column="0">
       <widget class="QComboBox" name="comboBox">
+       <property name="currentText">
+        <string>Lista de Comandos</string>
+       </property>
+       <property name="currentIndex">
+        <number>0</number>
+       </property>
        <item>
         <property name="text">
-         <string>Alive</string>
+         <string>Lista de Comandos</string>
         </property>
        </item>
        <item>
         <property name="text">
-         <string>Lista de Comandos</string>
+         <string>ALIVE</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>GET_LEDS</string>
+        </property>
+       </item>
+       <item>
+        <property name="text">
+         <string>SET_LEDS</string>
         </property>
        </item>
       </widget>
@@ -83,13 +99,92 @@
      </item>
     </layout>
    </widget>
+   <widget class="QGroupBox" name="groupBox_3">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>310</y>
+      <width>871</width>
+      <height>81</height>
+     </rect>
+    </property>
+    <property name="title">
+     <string>Leds</string>
+    </property>
+    <widget class="QWidget" name="">
+     <property name="geometry">
+      <rect>
+       <x>21</x>
+       <y>20</y>
+       <width>841</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QCheckBox" name="checkBoxLed1">
+        <property name="text">
+         <string>LED_RED</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxLed2">
+        <property name="text">
+         <string>LEG_BLUE</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxLed3">
+        <property name="text">
+         <string>LED_YELLOW</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="checkBoxLed4">
+        <property name="text">
+         <string>LED_GREEN</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+    <widget class="QWidget" name="">
+     <property name="geometry">
+      <rect>
+       <x>330</x>
+       <y>50</y>
+       <width>103</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <layout class="QFormLayout" name="formLayout">
+      <item row="0" column="0">
+       <widget class="QRadioButton" name="radioButtonOff">
+        <property name="text">
+         <string>OFF</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QRadioButton" name="radioButtonOn">
+        <property name="text">
+         <string>ON</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>576</width>
+     <width>906</width>
      <height>26</height>
     </rect>
    </property>

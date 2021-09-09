@@ -15,9 +15,10 @@ MainWindow::MainWindow(QWidget *parent)
     estado->setText("Desconectado............");
     ui->statusbar->addWidget(estado);
     ui->actionDesconectar->setEnabled(false);
-    ui->widget->setVisible(false);
+    //ui->widget->setVisible(false);
     estadoProtocolo=START;
     ui->pushButtonEnviar->setEnabled(false);
+    estadoComandos=ALIVE;
 
     ///Conexión de eventos
     connect(mySerial,&QSerialPort::readyRead,this, &MainWindow::dataRecived );
@@ -28,7 +29,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionSalir,&QAction::triggered,this,&MainWindow::close );
 
     myTimer->start(10);
-
 
 }
 
@@ -178,7 +178,7 @@ void MainWindow::dataRecived()
                 break;
         }
     }
-
+    delete [] incomingBuffer;
 }
 
 void MainWindow::decodeData()
@@ -186,8 +186,17 @@ void MainWindow::decodeData()
     QString str="";
     for(int a=1; a < rxData.index; a++){
         switch (rxData.payLoad[1]) {
-            case 0xF0:
+            case ALIVE:
                 str = "MBED-->PC *ID Válido* (¡¡¡¡¡ESTOY VIVO!!!!!!)";
+                break;
+            case GET_LEDS:
+                str = "MBED-->PC *ID Válido* (¡¡¡¡¡ESTADO DE LOS LEDS!!!!!!)";
+                myWord.ui8[0]=rxData.payLoad[2];
+                myWord.ui8[1]=rxData.payLoad[3];
+                getLedsCanvas(myWord.ui16[0]);
+                break;
+            case SET_LEDS:
+                str = "MBED-->PC *ID Válido* (¡¡¡¡¡LEDS SETEADOS CORRECTAMENTE!!!!!!)";
                 break;
             default:
                 str=((char *)rxData.payLoad);
@@ -202,7 +211,8 @@ void MainWindow::decodeData()
 
 void MainWindow::on_pushButtonEnviar_clicked()
 {
-
+    uint16_t auxleds=0;
+    txData.index=0;
     txData.payLoad[txData.index++]='U';
     txData.payLoad[txData.index++]='N';
     txData.payLoad[txData.index++]='E';
@@ -210,22 +220,48 @@ void MainWindow::on_pushButtonEnviar_clicked()
     txData.payLoad[txData.index++]=0;
     txData.payLoad[txData.index++]=':';
 
-    switch (ui->comboBox->currentIndex()) {
-    case 0:
-        txData.payLoad[txData.index++]=0xF0;
+    switch (estadoComandos) {
+    case ALIVE:
+        txData.payLoad[txData.index++]=ALIVE;
         txData.payLoad[NBYTES]=0x02;
         break;
-    case 1:
+    case GET_LEDS:
+        txData.payLoad[txData.index++]=GET_LEDS;
+        txData.payLoad[NBYTES]=0x02;
         break;
-    case 2:
+    case SET_LEDS:
+        txData.payLoad[txData.index++]=SET_LEDS;
+        if(ui->checkBoxLed1->isChecked()){
+            if(ui->radioButtonOn->isChecked())
+                auxleds |= 1 <<3;
+            else
+                auxleds &= ~(1<<3);
+        }
+        if(ui->checkBoxLed2->isChecked()){
+            if(ui->radioButtonOn->isChecked())
+                auxleds |= 1 <<2;
+            else
+                auxleds &= ~(1<<2);
+        }
+        if(ui->checkBoxLed3->isChecked()){
+            if(ui->radioButtonOn->isChecked())
+                auxleds |= 1 <<1;
+            else
+                auxleds &= ~(1<<1);
+        }
+        if(ui->checkBoxLed4->isChecked()){
+            if(ui->radioButtonOn->isChecked())
+                auxleds |= 1 <<0;
+            else
+                auxleds &= ~(1<<0);
+        }
+        myWord.ui16[0]=auxleds;
+        txData.payLoad[txData.index++]=myWord.ui8[0];
+        txData.payLoad[txData.index++]=myWord.ui8[1];
+        txData.payLoad[NBYTES]=0x04;
         break;
-    case 3:
+    case OTHERS:
         break;
-    case 4:
-        break;
-    case 5:
-        break;
-
     default:
         break;
     }
@@ -247,3 +283,96 @@ void MainWindow::on_pushButtonEnviar_clicked()
     ui->textBrowser->append("PC-->MBED (" + str + ")");
 
 }
+
+void MainWindow::on_comboBox_currentIndexChanged(int index)
+{
+    switch (index) {
+        case 1:
+            estadoComandos=ALIVE;
+        break;
+        case 2:
+            estadoComandos=GET_LEDS;
+        break;
+        case 3:
+            estadoComandos=SET_LEDS;
+        break;
+        case 4:
+            estadoComandos=OTHERS;
+        break;
+    default:
+        ;
+    }
+}
+
+void MainWindow::getLedsCanvas(uint16_t leds)
+{
+    QString strvaly;
+    uint8_t ancho=60, alto=60;
+    int16_t posx,posy, divide, auxled=0;
+    QPen Pen;
+    QPainter paint(myPaintBox->getCanvas());
+    myPaintBox->getCanvas()->fill(Qt::gray);
+    paint.setPen(Qt::black);
+    auxled|=1<<3;
+    if(auxled&leds)
+        paint.setBrush(Qt::red);
+    else
+        paint.setBrush(Qt::darkGray);
+    divide=myPaintBox->width()/4;
+    posx=(divide/2)-(ancho/2);
+    posy=(myPaintBox->height()/2);
+    posy/=2;
+    paint.drawEllipse(posx, posy,ancho,alto);
+    posx+=divide;
+    auxled=0;
+    auxled|=1<<2;
+    if(auxled&leds)
+        paint.setBrush(Qt::blue);
+    else
+        paint.setBrush(Qt::darkGray);
+    paint.drawEllipse(posx, posy,ancho,alto);
+    posx+=divide;
+    auxled=0;
+    auxled|=1<<1;
+    if(auxled&leds)
+        paint.setBrush(Qt::yellow);
+    else
+        paint.setBrush(Qt::darkGray);
+    paint.drawEllipse(posx, posy,ancho,alto);
+    posx+=divide;
+    auxled=0;
+    auxled|=1<<0;
+    if(auxled&leds)
+        paint.setBrush(Qt::green);
+    else
+        paint.setBrush(Qt::darkGray);
+
+    paint.drawEllipse(posx, posy,ancho,alto);
+
+    Pen.setWidth(2);
+    Pen.setColor(Qt::white);
+    paint.setPen(Pen);
+    paint.setRenderHint(QPainter::Antialiasing);
+    paint.setFont(QFont("Arial",13,QFont::Bold));
+    strvaly="LED_R";
+    posx=(divide/2)-(ancho/2);
+    posy=25;
+    paint.drawText(posx,posy,strvaly);
+    strvaly="LED_B";
+    posx+=divide;
+    paint.drawText(posx,posy,strvaly);
+    strvaly="LED_Y";
+    posx+=divide;
+    paint.drawText(posx,posy,strvaly);
+    strvaly="LED_G";
+    posx+=divide;
+    paint.drawText(posx,posy,strvaly);
+
+    myPaintBox->update();
+
+}
+/*
+void MainWindow::on_pushButton_clicked()
+{
+    getLedsCanvas(8);
+}*/
