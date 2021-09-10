@@ -81,7 +81,6 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 
     fillPortsParameters();
     fillPortsInfo();
-
     updateSettings();
 }
 
@@ -222,4 +221,11 @@ void SettingsDialog::updateSettings()
     currentSettings.stringFlowControl = ui->flowControlBox->currentText();
 
     //currentSettings.localEchoEnabled = ui->localEchoCheckBox->isChecked();
+}
+
+void SettingsDialog::on_pushButton_clicked()
+{
+    fillPortsParameters();
+    fillPortsInfo();
+    updateSettings();
 }

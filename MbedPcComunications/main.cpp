@@ -27,12 +27,20 @@ typedef enum{
     BUTTON_RISING   //3
 }_eButtonState;
 
+/**
+ * @brief Enumeración de eventos del botón
+ * Se usa para saber si el botón está presionado o nó
+ */
 typedef enum{
     EV_PRESSED,
     EV_NOT_PRESSED,
     EV_NONE
 }_eButtonEvent;
 
+/**
+ * @brief Esturctura de Teclas
+ * 
+ */
 typedef struct{
     _eButtonState estado;
     _eButtonEvent event;
@@ -42,10 +50,14 @@ typedef struct{
 
 _sTeclas ourButton[NUMBUTT];
 //                0001 ,  0010,  0100,  1000
+
+
 uint16_t mask[]={0x0001,0x0002,0x0004,0x0008};
 
-
-
+/**
+ * @brief Enumeración de la MEF para decodificar el protocolo
+ * 
+ */
 typedef enum{
     START,
     HEADER_1,
@@ -58,6 +70,10 @@ typedef enum{
 
 _eProtocolo estadoProtocolo;
 
+/**
+ * @brief Enumeración de la lista de comandos
+ * 
+ */
  typedef enum{
         ALIVE=0xF0,
         GET_LEDS=0xF1,
@@ -65,22 +81,29 @@ _eProtocolo estadoProtocolo;
         OTHERS
     }_eID;
 
+/**
+ * @brief Estructura de datos para el puerto serie
+ * 
+ */
 typedef struct{
-    uint8_t timeOut;
-    uint8_t cheksumRx;
-    uint8_t cheksumtx;
-    uint8_t indexWriteRx;
-    uint8_t indexReadRx;
-    uint8_t indexWriteTx;
-    uint8_t indexReadTx;
-    uint8_t bufferRx[256];
-    uint8_t bufferTx[256];
-    uint8_t payload[48];
+    uint8_t timeOut;         //!< TiemOut para reiniciar la máquina si se interrumpe la comunicación
+    uint8_t cheksumRx;       //!< Cheksumm RX
+    uint8_t cheksumtx;       //!< Cheksumm Tx
+    uint8_t indexWriteRx;    //!< Indice de escritura del buffer circular de recepción
+    uint8_t indexReadRx;     //!< Indice de lectura del buffer circular de recepción
+    uint8_t indexWriteTx;    //!< Indice de escritura del buffer circular de transmisión
+    uint8_t indexReadTx;     //!< Indice de lectura del buffer circular de transmisión
+    uint8_t bufferRx[256];   //!< Buffer circular de recepción
+    uint8_t bufferTx[256];   //!< Buffer circular de transmisión
+    uint8_t payload[48];     //!< Buffer para el Payload de datos recibidos
 }_sDato ;
 
 volatile _sDato datosComProtocol;
 
-
+/**
+ * @brief Mapa de bits para implementar banderas
+ * 
+ */
 typedef union{
     struct{
         uint8_t checkButtons :1;
@@ -93,7 +116,10 @@ volatile _bGeneralFlags myFlags;
 
 volatile uint8_t hearBeatEvent;
 
-
+/**
+ * @brief Unión para descomponer/componer datos mayores a 1 byte
+ * 
+ */
 typedef union {
     int32_t i32;
     uint32_t ui32;
@@ -132,6 +158,13 @@ void actuallizaMef(uint8_t indice );
  * 
  */
 void togleLed(uint8_t indice);
+
+/**
+ * @brief Enciende o apaga los leds de la máscara
+ * 
+ * @param mask 
+ */
+void manejadorLed(uint8_t mask);
 
 void onDataRx(void);
 
@@ -255,7 +288,43 @@ void actuallizaMef(uint8_t indice){
 
 
 void togleLed(uint8_t indice){
-   leds=mask[indice];
+    uint16_t ledsAux=leds, auxmask=0;
+    auxmask |= 1<<indice;
+    if(auxmask & leds)
+        ledsAux &= ~(1 << (indice)) ; 
+    else
+         ledsAux |= 1 << (indice) ;
+    leds = ledsAux ;
+}
+
+
+void manejadorLed(uint8_t mask){
+    uint16_t auxled=0, setLeds=0;
+    auxled|=1<<3;
+    if(auxled & mask)
+        setLeds |= 1 <<3;
+    else
+        setLeds &= ~(1<<3);
+    auxled=0;
+    auxled|=1<<2;
+    if(auxled & mask)
+        setLeds |= 1 <<2;
+    else
+        setLeds &= ~(1<<2);
+    auxled=0;
+    auxled|=1<<1;
+    if(auxled & mask)
+        setLeds |= 1 <<1;
+    else
+        setLeds &= ~(1<<1);
+    auxled=0;
+    auxled|=1<<0;
+    if(auxled & mask)
+        setLeds |= 1 <<0;
+    else
+        setLeds &= ~(1<<0);
+
+    leds=setLeds;
 }
 
 void decodeProtocol(void)
@@ -359,7 +428,7 @@ void decodeData(void)
             myWord.ui8[0]=datosComProtocol.payload[2];
             myWord.ui8[1]=datosComProtocol.payload[3];
             auxBuffTx[NBYTES]=0x02;
-            leds=myWord.ui16[0];
+            manejadorLed(myWord.ui16[0]);
             break;
         case 3:
             break;
